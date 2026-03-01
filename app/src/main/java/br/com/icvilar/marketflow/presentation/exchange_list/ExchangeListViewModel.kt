@@ -99,7 +99,17 @@ class ExchangeListViewModel @Inject constructor(
 
     fun formatDate(dateString: String?): String {
         if (dateString.isNullOrEmpty()) return "Launched: Unknown"
-        // Formato original ISO: 2013-04-28T00:00:00.000Z
-        return "Launched: ${dateString.take(10)}"
+        return try {
+            val inputFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US).apply {
+                timeZone = java.util.TimeZone.getTimeZone("UTC")
+            }
+            val outputFormat = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.US).apply {
+                timeZone = java.util.TimeZone.getTimeZone("UTC")
+            }
+            val date = inputFormat.parse(dateString)
+            if (date != null) "Launched: ${outputFormat.format(date)}" else "Launched: ${dateString.take(10)}"
+        } catch (e: Exception) {
+            "Launched: ${dateString.take(10)}"
+        }
     }
 }

@@ -1,6 +1,7 @@
 package br.com.icvilar.marketflow.domain.usecase
 
-import br.com.icvilar.marketflow.domain.model.Coin
+import br.com.icvilar.marketflow.domain.model.Asset
+import br.com.icvilar.marketflow.domain.model.AssetCurrency
 import br.com.icvilar.marketflow.domain.repository.ExchangeRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -25,8 +26,8 @@ class GetExchangeCoinsUseCaseTest {
     fun `invoke returns success with coin list`() = runTest {
         // Arrange
         val coins = listOf(
-            Coin(id = 1, name = "Bitcoin", symbol = "BTC", slug = "bitcoin", isActive = 1, rank = 1),
-            Coin(id = 2, name = "Ethereum", symbol = "ETH", slug = "ethereum", isActive = 1, rank = 2)
+            Asset(currency = AssetCurrency(name = "Bitcoin", symbol = "BTC", priceUsd = 1.0)),
+            Asset(currency = AssetCurrency(name = "Ethereum", symbol = "ETH", priceUsd = 2.0))
         )
         coEvery { repository.getExchangeCoins("270") } returns Result.success(coins)
 
@@ -36,8 +37,8 @@ class GetExchangeCoinsUseCaseTest {
         // Assert
         assertTrue(result.isSuccess)
         assertEquals(2, result.getOrNull()?.size)
-        assertEquals("Bitcoin", result.getOrNull()?.first()?.name)
-        assertEquals("ETH", result.getOrNull()?.last()?.symbol)
+        assertEquals("Bitcoin", result.getOrNull()?.first()?.currency?.name)
+        assertEquals("ETH", result.getOrNull()?.last()?.currency?.symbol)
         coVerify(exactly = 1) { repository.getExchangeCoins("270") }
     }
 
@@ -74,7 +75,7 @@ class GetExchangeCoinsUseCaseTest {
     fun `invoke passes correct id to repository`() = runTest {
         // Arrange
         val coins = listOf(
-            Coin(id = 1, name = "Bitcoin", symbol = "BTC", slug = "bitcoin", isActive = 1)
+            Asset(currency = AssetCurrency(name = "Bitcoin", symbol = "BTC", priceUsd = 1.0))
         )
         coEvery { repository.getExchangeCoins("123") } returns Result.success(coins)
 

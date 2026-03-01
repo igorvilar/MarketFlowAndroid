@@ -233,11 +233,11 @@ class ExchangeRepositoryImplTest {
     fun `getExchangeCoins returns success with coin list`() = runTest {
         // Arrange
         val coins = listOf(
-            Coin(id = 1, name = "Bitcoin", symbol = "BTC", slug = "bitcoin", isActive = 1, rank = 1),
-            Coin(id = 2, name = "Ethereum", symbol = "ETH", slug = "ethereum", isActive = 1, rank = 2)
+            Asset(currency = AssetCurrency(name = "Bitcoin", symbol = "BTC", priceUsd = 1.0)),
+            Asset(currency = AssetCurrency(name = "Ethereum", symbol = "ETH", priceUsd = 2.0))
         )
-        val coinResponse = CoinResponse(data = coins, status = successStatus)
-        coEvery { api.getExchangeAssets("270") } returns Response.success(coinResponse)
+        val assetResponse = AssetResponse(data = coins, status = successStatus)
+        coEvery { api.getExchangeAssets("270") } returns Response.success(assetResponse)
 
         // Act
         val result = repository.getExchangeCoins("270")
@@ -245,8 +245,8 @@ class ExchangeRepositoryImplTest {
         // Assert
         assertTrue(result.isSuccess)
         assertEquals(2, result.getOrNull()?.size)
-        assertEquals("Bitcoin", result.getOrNull()?.first()?.name)
-        assertEquals("ETH", result.getOrNull()?.last()?.symbol)
+        assertEquals("Bitcoin", result.getOrNull()?.first()?.currency?.name)
+        assertEquals("ETH", result.getOrNull()?.last()?.currency?.symbol)
     }
 
     @Test
@@ -268,8 +268,8 @@ class ExchangeRepositoryImplTest {
     @Test
     fun `getExchangeCoins returns failure when API status has error`() = runTest {
         // Arrange
-        val coinResponse = CoinResponse(data = emptyList(), status = errorStatus)
-        coEvery { api.getExchangeAssets("270") } returns Response.success(coinResponse)
+        val assetResponse = AssetResponse(data = emptyList(), status = errorStatus)
+        coEvery { api.getExchangeAssets("270") } returns Response.success(assetResponse)
 
         // Act
         val result = repository.getExchangeCoins("270")
@@ -295,8 +295,8 @@ class ExchangeRepositoryImplTest {
     @Test
     fun `getExchangeCoins returns empty list when no coins available`() = runTest {
         // Arrange
-        val coinResponse = CoinResponse(data = emptyList(), status = successStatus)
-        coEvery { api.getExchangeAssets("270") } returns Response.success(coinResponse)
+        val assetResponse = AssetResponse(data = emptyList(), status = successStatus)
+        coEvery { api.getExchangeAssets("270") } returns Response.success(assetResponse)
 
         // Act
         val result = repository.getExchangeCoins("270")

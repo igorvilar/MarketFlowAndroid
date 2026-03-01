@@ -1,6 +1,6 @@
 package br.com.icvilar.marketflow.data.remote
 
-import br.com.icvilar.marketflow.domain.model.CoinResponse
+import br.com.icvilar.marketflow.domain.model.AssetResponse
 import br.com.icvilar.marketflow.domain.model.ExchangeInfoResponse
 import br.com.icvilar.marketflow.domain.model.ExchangeResponse
 import retrofit2.Response
@@ -23,5 +23,5 @@ interface CoinMarketCapApi {
     @GET("v1/exchange/assets") // Mapeamento correto de acordo com o Service do iOS
     suspend fun getExchangeAssets(
         @Query("id") id: String
-    ): Response<CoinResponse> // Reutilizando a CoinResponse
+    ): Response<AssetResponse>
 }

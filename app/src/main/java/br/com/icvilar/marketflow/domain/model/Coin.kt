@@ -13,16 +13,24 @@ data class Coin(
     val rank: Int? = null,
     @SerialName("first_historical_data") val firstHistoricalData: String? = null,
     @SerialName("last_historical_data") val lastHistoricalData: String? = null,
-    val platform: Platform? = null
+    val platform: Platform? = null,
+    val currency: AssetCurrency? = null
+)
+
+@Serializable
+data class AssetCurrency(
+    val name: String,
+    val symbol: String,
+    @SerialName("price_usd") val priceUsd: Double? = null
 )
 
 @Serializable
 data class Platform(
-    val id: Int,
-    val name: String,
-    val symbol: String,
-    val slug: String,
-    @SerialName("token_address") val tokenAddress: String
+    val id: Int? = null,
+    val name: String? = null,
+    val symbol: String? = null,
+    val slug: String? = null,
+    @SerialName("token_address") val tokenAddress: String? = null
 )
 
 @Serializable

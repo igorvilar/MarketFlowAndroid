@@ -3,7 +3,7 @@ package br.com.icvilar.marketflow.data.repository
 import android.content.Context
 import android.content.SharedPreferences
 import br.com.icvilar.marketflow.data.remote.CoinMarketCapApi
-import br.com.icvilar.marketflow.domain.model.Coin
+import br.com.icvilar.marketflow.domain.model.Asset
 import br.com.icvilar.marketflow.domain.model.Exchange
 import br.com.icvilar.marketflow.domain.model.ExchangeDetail
 import br.com.icvilar.marketflow.domain.repository.ExchangeRepository
@@ -83,7 +83,7 @@ class ExchangeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getExchangeCoins(id: String): Result<List<Coin>> {
+    override suspend fun getExchangeCoins(id: String): Result<List<Asset>> {
         return try {
             val response = api.getExchangeAssets(id)
             if (response.isSuccessful && response.body() != null) {
