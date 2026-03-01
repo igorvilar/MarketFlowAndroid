@@ -11,10 +11,16 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
+import android.content.Context
+import android.content.SharedPreferences
+import io.mockk.every
 
 class ExchangeRepositoryImplTest {
 
     private lateinit var api: CoinMarketCapApi
+    private lateinit var context: Context
+    private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var sharedPrefsEditor: SharedPreferences.Editor
     private lateinit var repository: ExchangeRepositoryImpl
 
     private val successStatus = APIStatus(
@@ -32,7 +38,16 @@ class ExchangeRepositoryImplTest {
     @Before
     fun setup() {
         api = mockk()
-        repository = ExchangeRepositoryImpl(api)
+        context = mockk()
+        sharedPrefs = mockk()
+        sharedPrefsEditor = mockk(relaxed = true)
+
+        every { context.getSharedPreferences(any(), any()) } returns sharedPrefs
+        every { sharedPrefs.edit() } returns sharedPrefsEditor
+        every { sharedPrefs.getString(any(), any()) } returns null
+        every { sharedPrefsEditor.putString(any(), any()) } returns sharedPrefsEditor
+
+        repository = ExchangeRepositoryImpl(api, context)
     }
 
     // ==========================================

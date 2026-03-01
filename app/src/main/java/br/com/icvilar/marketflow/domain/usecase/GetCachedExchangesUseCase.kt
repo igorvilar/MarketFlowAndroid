@@ -4,10 +4,10 @@ import br.com.icvilar.marketflow.domain.model.Exchange
 import br.com.icvilar.marketflow.domain.repository.ExchangeRepository
 import javax.inject.Inject
 
-class GetExchangesUseCase @Inject constructor(
+class GetCachedExchangesUseCase @Inject constructor(
     private val repository: ExchangeRepository
 ) {
-    suspend operator fun invoke(start: Int = 1, limit: Int = 50): Result<List<Exchange>> {
-        return repository.getExchanges(start, limit)
+    suspend operator fun invoke(): List<Exchange>? {
+        return repository.loadCachedExchanges()
     }
 }

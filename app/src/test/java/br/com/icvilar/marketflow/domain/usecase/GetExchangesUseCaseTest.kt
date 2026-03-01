@@ -28,7 +28,7 @@ class GetExchangesUseCaseTest {
             Exchange(id = 1, name = "Binance", slug = "binance"),
             Exchange(id = 2, name = "Coinbase", slug = "coinbase")
         )
-        coEvery { repository.getExchanges() } returns Result.success(exchanges)
+        coEvery { repository.getExchanges(any(), any()) } returns Result.success(exchanges)
 
         // Act
         val result = useCase()
@@ -37,13 +37,13 @@ class GetExchangesUseCaseTest {
         assertTrue(result.isSuccess)
         assertEquals(2, result.getOrNull()?.size)
         assertEquals("Binance", result.getOrNull()?.first()?.name)
-        coVerify(exactly = 1) { repository.getExchanges() }
+        coVerify(exactly = 1) { repository.getExchanges(1, 50) }
     }
 
     @Test
     fun `invoke returns failure when repository fails`() = runTest {
         // Arrange
-        coEvery { repository.getExchanges() } returns Result.failure(Exception("Network error"))
+        coEvery { repository.getExchanges(any(), any()) } returns Result.failure(Exception("Network error"))
 
         // Act
         val result = useCase()
@@ -51,13 +51,13 @@ class GetExchangesUseCaseTest {
         // Assert
         assertTrue(result.isFailure)
         assertEquals("Network error", result.exceptionOrNull()?.message)
-        coVerify(exactly = 1) { repository.getExchanges() }
+        coVerify(exactly = 1) { repository.getExchanges(1, 50) }
     }
 
     @Test
     fun `invoke returns empty list when repository returns empty`() = runTest {
         // Arrange
-        coEvery { repository.getExchanges() } returns Result.success(emptyList())
+        coEvery { repository.getExchanges(any(), any()) } returns Result.success(emptyList())
 
         // Act
         val result = useCase()

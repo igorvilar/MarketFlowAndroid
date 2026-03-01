@@ -7,8 +7,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,10 +45,27 @@ fun ExchangeListScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 is ExchangeListUiState.Success -> {
+                    val listState = rememberLazyListState()
+
+                    val shouldLoadMore by remember {
+                        derivedStateOf {
+                            val totalItems = listState.layoutInfo.totalItemsCount
+                            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            totalItems > 0 && lastVisibleItemIndex >= totalItems - 5
+                        }
+                    }
+
+                    LaunchedEffect(shouldLoadMore) {
+                        if (shouldLoadMore && !state.isFetchingMore) {
+                            viewModel.fetchMoreExchanges()
+                        }
+                    }
+
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(32.dp)
                     ) {
                         items(state.exchanges) { exchange ->
                             ExchangeListItem(
@@ -54,6 +75,19 @@ fun ExchangeListScreen(
                                 dateText = viewModel.formatDate(exchange.firstHistoricalData),
                                 onClick = { onNavigateToDetail(exchange.id.toString()) }
                             )
+                        }
+
+                        if (state.isFetchingMore) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
                         }
                     }
                 }

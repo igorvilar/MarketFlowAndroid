@@ -2,6 +2,7 @@ package br.com.icvilar.marketflow.presentation.exchange_list
 
 import app.cash.turbine.test
 import br.com.icvilar.marketflow.domain.model.Exchange
+import br.com.icvilar.marketflow.domain.usecase.GetCachedExchangesUseCase
 import br.com.icvilar.marketflow.domain.usecase.GetExchangesUseCase
 import br.com.icvilar.marketflow.utils.MainDispatcherRule
 import io.mockk.coEvery
@@ -20,6 +21,7 @@ class ExchangeListViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val getExchangesUseCase: GetExchangesUseCase = mockk()
+    private val getCachedExchangesUseCase: GetCachedExchangesUseCase = mockk()
 
     @Test
     fun `when init, state is Loading and then Success if usecase returns success`() = runTest {
@@ -28,11 +30,12 @@ class ExchangeListViewModelTest {
             Exchange(id = 1, name = "Binance", slug = "binance"),
             Exchange(id = 2, name = "Coinbase", slug = "coinbase")
         )
-        coEvery { getExchangesUseCase() } returns Result.success(exchanges)
+        coEvery { getExchangesUseCase(any(), any()) } returns Result.success(exchanges)
+        coEvery { getCachedExchangesUseCase() } returns null
 
         // Act & Assert
         // A ViewModel chama loadExchanges no init
-        val viewModel = ExchangeListViewModel(getExchangesUseCase)
+        val viewModel = ExchangeListViewModel(getExchangesUseCase, getCachedExchangesUseCase)
 
         viewModel.uiState.test {
             // Pode ignorar o Loading inicial porque com UnconfinedTestDispatcher o código executa e finaliza rápido,
@@ -47,10 +50,11 @@ class ExchangeListViewModelTest {
     @Test
     fun `when init, state is Loading and then Error if usecase returns failure`() = runTest {
         // Arrange
-        coEvery { getExchangesUseCase() } returns Result.failure(Exception("Network error"))
+        coEvery { getExchangesUseCase(any(), any()) } returns Result.failure(Exception("Network error"))
+        coEvery { getCachedExchangesUseCase() } returns null
 
         // Act & Assert
-        val viewModel = ExchangeListViewModel(getExchangesUseCase)
+        val viewModel = ExchangeListViewModel(getExchangesUseCase, getCachedExchangesUseCase)
 
         viewModel.uiState.test {
             val finalState = awaitItem()
@@ -62,8 +66,9 @@ class ExchangeListViewModelTest {
     @Test
     fun `formatLogoUrl returns correct coinmarketcap url`() {
         // Arrange
-        coEvery { getExchangesUseCase() } returns Result.success(emptyList())
-        val viewModel = ExchangeListViewModel(getExchangesUseCase)
+        coEvery { getExchangesUseCase(any(), any()) } returns Result.success(emptyList())
+        coEvery { getCachedExchangesUseCase() } returns null
+        val viewModel = ExchangeListViewModel(getExchangesUseCase, getCachedExchangesUseCase)
 
         // Act
         val url = viewModel.formatLogoUrl(270)
