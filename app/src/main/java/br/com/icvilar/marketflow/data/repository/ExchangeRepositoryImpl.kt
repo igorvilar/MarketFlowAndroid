@@ -18,12 +18,12 @@ class ExchangeRepositoryImpl @Inject constructor(
                 // Checa o status interno do json (ex: erro mapeado pela API)
                 val status = response.body()?.status
                 if (status?.errorCode != 0 && status?.errorCode != null) {
-                    Result.failure(Exception(status.errorMessage ?: "API Error: \${status.errorCode}"))
+                    Result.failure(Exception(status.errorMessage ?: "API Error: ${status.errorCode}"))
                 } else {
                     Result.success(response.body()!!.data)
                 }
             } else {
-                Result.failure(Exception("HTTP Error: \${response.code()} - \${response.message()}"))
+                Result.failure(Exception("HTTP Error: ${response.code()} - ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -36,7 +36,7 @@ class ExchangeRepositoryImpl @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 val status = response.body()?.status
                 if (status?.errorCode != 0 && status?.errorCode != null) {
-                    Result.failure(Exception(status.errorMessage ?: "API Error: \${status.errorCode}"))
+                    Result.failure(Exception(status.errorMessage ?: "API Error: ${status.errorCode}"))
                 } else {
                     val detail = response.body()!!.data[id]
                     if (detail != null) {
@@ -46,7 +46,7 @@ class ExchangeRepositoryImpl @Inject constructor(
                     }
                 }
             } else {
-                Result.failure(Exception("HTTP Error: \${response.code()} - \${response.message()}"))
+                Result.failure(Exception("HTTP Error: ${response.code()} - ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -59,12 +59,12 @@ class ExchangeRepositoryImpl @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 val status = response.body()?.status
                 if (status?.errorCode != 0 && status?.errorCode != null) {
-                    Result.failure(Exception(status.errorMessage ?: "API Error: \${status.errorCode}"))
+                    Result.failure(Exception(status.errorMessage ?: "API Error: ${status.errorCode}"))
                 } else {
                     Result.success(response.body()!!.data)
                 }
             } else {
-                Result.failure(Exception("HTTP Error: \${response.code()} - \${response.message()}"))
+                Result.failure(Exception("HTTP Error: ${response.code()} - ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
